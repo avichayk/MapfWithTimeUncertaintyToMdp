@@ -81,7 +81,6 @@ class mmdp_runner:
     curr_s = len(agents) # so far 1 state added for each agent
     states = np.array([S[0][0], S[1][0]])
     agent_curr_state = [0, 1]  # updated during running
-    print(states)
     start = time.time()
 
     # P=A*S*S, R=S*A duplicated by agents
@@ -140,7 +139,15 @@ class mmdp_runner:
                 S[agent_ind] = np.append(S[agent_ind], [[states[loop_curr_state][0] + actions[next_action][0],
                                                                  states[loop_curr_state][1] + actions[next_action][1],
                                                                  curr_t]], 0)
-                R[agent_ind] = np.append(R[agent_ind], [np.zeros(len(actions))], 0) # TODO: add col to R...
+
+
+
+
+                # for state_ind in range(len(states)-1):
+                #     R[agent_ind] = np.append(R[agent_ind], [np.zeros(len(actions))],0) # add cols to R existing states
+                print(R.shape)
+                R[agent_ind] = np.append(R[agent_ind], [np.zeros(len(actions))], 0) # TODO: add row to R[agent_id]...
+                print(R.shape)
 
                 for r_action_id in range(len(actions)):
                     # check if action in state gets to goal
@@ -156,7 +163,6 @@ class mmdp_runner:
                                                            states[-1][1]])[
                                 0] * -1  # 5 = width of board (update if board size changes)
 
-                print(R[agent_ind])
 
                 agent_curr_state[agent_ind] = len(states)
 
@@ -173,9 +179,11 @@ class mmdp_runner:
                                     if (states[other_state][0] + rev_action[0] == states[loop_curr_state][0] and
                                         states[other_state][1] + rev_action[1] == states[loop_curr_state][1] and
                                         board[states[other_state][0] + rev_action[0]][states[other_state][1] + rev_action[1] != 1]):
-                                            R[other_agent_ind][other_state][r_u_action] = \
-                                                                (time_uncertainty[r_u_action][states[other_state][0] * 5 +
-                                                                       states[other_state][1]])[0] * -1  # 5 = width of board (update if board size changes)
+                                        print(R.shape)
+
+                                        R[other_agent_ind][other_state][r_u_action] = \
+                                                            (time_uncertainty[r_u_action][states[other_state][0] * 5 +
+                                                                   states[other_state][1]])[0] * -1  # 5 = width of board (update if board size changes)
                                     # new location is an obstacle
                                     if (states[other_state][0] + actions[r_u_action][0] == states[loop_curr_state+1][0] and
                                         states[other_state][1] + actions[r_u_action][1] == states[loop_curr_state+1][1] and
